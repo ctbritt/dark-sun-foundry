@@ -4,6 +4,7 @@
     "darkSun.js"
   ],
   "title": "Dark Sun for Foundry",
+  "description": "Dark Sun campaign adaptation for D&D 5e in Foundry VTT. Features Athasian currency system (ceramic tokens, lead beads), material properties (bone, obsidian, wood, stone), psionic spell school, and setting-appropriate language modifications.",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "12",
