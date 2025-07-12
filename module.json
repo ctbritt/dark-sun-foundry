@@ -9,5 +9,16 @@
   "compatibility": {
     "minimum": "12",
     "verified": "13"
-  }
+  },
+  "authors": [
+    {
+      "name": "Christopher Allbritton",
+      "github": "ctbritt"
+    }
+  ],
+  "url": "https://github.com/ctbritt/dark-sun-foundry",
+  "manifest": "https://github.com/ctbritt/dark-sun-foundry/releases/download/v1.0.0/module.json",
+  "download": "https://github.com/ctbritt/dark-sun-foundry/releases/download/v1.0.0/module.zip",
+  "documentation": "https://github.com/ctbritt/dark-sun-foundry/blob/master/README.md",
+  "bugs": "https://github.com/ctbritt/dark-sun-foundry/issues"
 }
