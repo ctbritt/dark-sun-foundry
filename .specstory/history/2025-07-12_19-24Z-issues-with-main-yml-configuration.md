@@ -349,3 +349,103 @@ The trailing slash `/` is what makes it ignore the entire directory rather than 
 
 ---
 
+_**User**_
+
+do I need to commit .git files to github? 
+
+---
+
+_**Assistant**_
+
+**No, you should NOT commit `.git` files to GitHub!**
+
+The `.git` directory contains your local Git repository metadata and should never be committed or pushed to GitHub. Here's why:
+
+## What `.git` contains:
+- Local repository history
+- Local configuration
+- Local branches and refs
+- Local hooks and metadata
+
+## What happens if you commit `.git`:
+- **Repository corruption**: You'd be trying to put a Git repo inside another Git repo
+- **Conflicts**: Multiple `.git` directories would cause conflicts
+- **GitHub rejection**: GitHub would likely reject the push
+
+## What you SHOULD commit:
+- Your source code files
+- Configuration files (like `.gitignore`, `package.json`, etc.)
+- Documentation (README, LICENSE, etc.)
+- GitHub-specific files (`.github/workflows/`, `.github/ISSUE_TEMPLATE/`, etc.)
+
+## What you should NOT commit:
+- `.git/` directory (never!)
+- `node_modules/` (if using Node.js)
+- Build outputs (`dist/`, `build/`, etc.)
+- IDE files (`.vscode/`, `.idea/`, etc.)
+- OS files (`.DS_Store`, `Thumbs.db`, etc.)
+- Environment files (`.env`, `.env.local`, etc.)
+
+## Check your current status:
+```bash
+git status
+```
+
+If you see `.git/` in the files to be committed, that's a problem. You can remove it:
+```bash
+git reset HEAD .git/
+git checkout -- .git/
+```
+
+The `.git` directory should always remain local and never be part of your commits.
+
+---
+
+_**User**_
+
+i mean the .gitignore and .gitattributes files. 
+
+---
+
+_**Assistant**_
+
+**Yes, you SHOULD commit `.gitignore` and `.gitattributes` files to GitHub!**
+
+These are important configuration files that should be shared with your repository:
+
+## `.gitignore`
+- **Should be committed** - tells other developers what files to ignore
+- **Repository-specific** - each project has different files to ignore
+- **Team collaboration** - ensures everyone ignores the same files
+
+## `.gitattributes`
+- **Should be committed** - defines how Git handles different file types
+- **Cross-platform consistency** - ensures line endings work correctly
+- **Repository configuration** - part of your project's setup
+
+## Why commit them:
+1. **Team consistency** - everyone ignores the same files
+2. **Project setup** - new contributors get the right ignore rules
+3. **Repository integrity** - prevents accidental commits of unwanted files
+4. **Standard practice** - these are considered part of your project configuration
+
+## Check if they're committed:
+```bash
+git status
+```
+
+If they show as untracked or modified, commit them:
+```bash
+git add .gitignore .gitattributes
+git commit -m "Add gitignore and gitattributes files"
+git push
+```
+
+## Your current files look good:
+- `.gitignore` - properly configured for FoundryVTT
+- `.gitattributes` - likely has line ending rules
+
+Both should definitely be committed to your GitHub repository!
+
+---
+
