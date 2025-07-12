@@ -1,9 +1,9 @@
 {
-  "id": "dark-sun-foundry",
+  "id": "dark-sun",
   "esmodules": [
     "darkSun.js"
   ],
-  "title": "Dark Sun",
+  "title": "Dark Sun for Foundry",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "12",
