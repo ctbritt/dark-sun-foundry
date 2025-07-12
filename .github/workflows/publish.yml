@@ -1,0 +1,87 @@
+name: Publish to Foundry VTT
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Create module manifest
+      run: |
+        # Read the current version from module.json
+        VERSION=$(node -p "require('./module.json').version")
+        
+        # Create the manifest URL
+        MANIFEST_URL="https://github.com/${{ github.repository }}/releases/latest/download/module.json"
+        
+        # Update module.json with the manifest URL
+        node -e "
+        const fs = require('fs');
+        const moduleJson = JSON.parse(fs.readFileSync('./module.json', 'utf8'));
+        moduleJson.manifest = '$MANIFEST_URL';
+        moduleJson.download = 'https://github.com/${{ github.repository }}/releases/latest/download/module.zip';
+        fs.writeFileSync('./module.json', JSON.stringify(moduleJson, null, 2));
+        "
+        
+    - name: Create module zip
+      run: |
+        # Create a zip file with all module files
+        zip -r module.zip . -x "*.git*" "*.github*" "node_modules/*" "*.log" "*.tmp"
+        
+    - name: Upload module files to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./module.json
+        asset_name: module.json
+        asset_content_type: application/json
+        
+    - name: Upload module zip to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./module.zip
+        asset_name: module.zip
+        asset_content_type: application/zip
+        
+    - name: Create Foundry manifest
+      run: |
+        # Create a manifest.json file for Foundry VTT
+        cat > manifest.json << EOF
+        {
+          "name": "Dark Sun",
+          "id": "dark-sun",
+          "version": "$(node -p "require('./module.json').version")",
+          "description": "A Foundry VTT module that adapts the D&D 5e system for Dark Sun campaign settings",
+          "author": "ctbritt",
+          "minimumCoreVersion": "12",
+          "compatibleCoreVersion": "13",
+          "manifest": "https://github.com/${{ github.repository }}/releases/latest/download/module.json",
+          "download": "https://github.com/${{ github.repository }}/releases/latest/download/module.zip"
+        }
+        EOF
+        
+    - name: Upload manifest to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./manifest.json
+        asset_name: manifest.json
+        asset_content_type: application/json 

@@ -59,6 +59,24 @@ This module uses Foundry VTT's hook system to modify the D&D 5e configuration. T
 - `module.json`: Module manifest and metadata
 - `darkSun.js`: Main module functionality
 - `.gitattributes`: Git configuration for binary files
+- `scripts/release.js`: Release management script
+- `.github/workflows/`: GitHub Actions workflows
+
+### Release Process
+
+To create a new release:
+
+1. **Update version**: `npm run version 1.1.0`
+2. **Prepare release**: `npm run release 1.1.0`
+3. **Commit changes**: `git add . && git commit -m "Release v1.1.0"`
+4. **Push to GitHub**: `git push origin master`
+5. **Create GitHub release**: Go to GitHub and create a new release with tag `v1.1.0`
+6. **Upload files**: Upload the generated zip file to the GitHub release
+
+The GitHub Actions workflow will automatically:
+- Validate the module structure
+- Create release assets
+- Update manifest URLs for Foundry VTT installation
 
 ## License
 

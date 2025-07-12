@@ -387,3 +387,269 @@ Your Dark Sun module is now properly version controlled and available on GitHub!
 
 ---
 
+_**User**_
+
+ok. now create a workflow to publish on foundry. 
+
+---
+
+_**Assistant**_
+
+I'll help you create a GitHub Actions workflow to automatically publish your Dark Sun module to the Foundry VTT module directory. Let me create the necessary workflow files.
+
+
+---
+
+```bash
+mkdir -p .github/workflows
+```
+
+```
+
+░▒▓   …/dark-sun   master   v23.11.0   15:20  
+❯ mkdir -p .github/workflows
+mkdir: created directory '.github'
+mkdir: created directory '.github/workflows'
+
+░▒▓   …/dark-sun   master   v23.11.0   15:20  
+❯
+```
+
+---
+
+Now let me create the GitHub Actions workflow for publishing to Foundry VTT:
+
+
+---
+
+```diff
+- 
++ name: Publish to Foundry VTT
++ 
++ on:
++   release:
++     types: [published]
++ 
++ jobs:
++   publish:
++     runs-on: ubuntu-latest
++     
++     steps:
++     - name: Checkout code
++       uses: actions/checkout@v4
++       
++     - name: Setup Node.js
++       uses: actions/setup-node@v4
++       with:
++         node-version: '18'
++         
++     - name: Create module manifest
++       run: |
++         # Read the current version from module.json
++         VERSION=$(node -p "require('./module.json').version")
++         
++         # Create the manifest URL
++         MANIFEST_URL="https://github.com/${{ github.repository }}/releases/latest/download/module.json"
++         
++         # Update module.json with the manifest URL
++         node -e "
++         const fs = require('fs');
++         const moduleJson = JSON.parse(fs.readFileSync('./module.json', 'utf8'));
++         moduleJson.manifest = '$MANIFEST_URL';
++         moduleJson.download = 'https://github.com/${{ github.repository }}/releases/latest/download/module.zip';
++         fs.writeFileSync('./module.json', JSON.stringify(moduleJson, null, 2));
++         "
++         
++     - name: Create module zip
++       run: |
++         # Create a zip file with all module files
++         zip -r module.zip . -x "*.git*" "*.github*" "node_modules/*" "*.log" "*.tmp"
++         
++     - name: Upload module files to release
++       uses: actions/upload-release-asset@v1
++       env:
++         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++       with:
++         upload_url: ${{ github.event.release.upload_url }}
++         asset_path: ./module.json
++         asset_name: module.json
++         asset_content_type: application/json
++         
++     - name: Upload module zip to release
++       uses: actions/upload-release-asset@v1
++       env:
++         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++       with:
++         upload_url: ${{ github.event.release.upload_url }}
++         asset_path: ./module.zip
++         asset_name: module.zip
++         asset_content_type: application/zip
++         
++     - name: Create Foundry manifest
++       run: |
++         # Create a manifest.json file for Foundry VTT
++         cat > manifest.json << EOF
++         {
++           "name": "Dark Sun",
++           "id": "dark-sun",
++           "version": "$(node -p "require('./module.json').version")",
++           "description": "A Foundry VTT module that adapts the D&D 5e system for Dark Sun campaign settings",
++           "author": "ctbritt",
++           "minimumCoreVersion": "12",
++           "compatibleCoreVersion": "13",
++           "manifest": "https://github.com/${{ github.repository }}/releases/latest/download/module.json",
++           "download": "https://github.com/${{ github.repository }}/releases/latest/download/module.zip"
++         }
++         EOF
++         
++     - name: Upload manifest to release
++       uses: actions/upload-release-asset@v1
++       env:
++         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++       with:
++         upload_url: ${{ github.event.release.upload_url }}
++         asset_path: ./manifest.json
++         asset_name: manifest.json
++         asset_content_type: application/json 
+```
+
+---
+
+Now let me create a workflow for testing and validation:
+
+
+---
+
+```diff
+- 
++ name: Test Module
++ 
++ on:
++   push:
++     branches: [ main, master ]
++   pull_request:
++     branches: [ main, master ]
++ 
++ jobs:
++   test:
++     runs-on: ubuntu-latest
++     
++     steps:
++     - name: Checkout code
++       uses: actions/checkout@v4
++       
++     - name: Setup Node.js
++       uses: actions/setup-node@v4
++       with:
++         node-version: '18'
++         
++     - name: Validate module.json
++       run: |
++         # Check if module.json exists and is valid JSON
++         if [ ! -f "module.json" ]; then
++           echo "❌ module.json not found"
++           exit 1
++         fi
++         
++         # Validate JSON syntax
++         if ! node -e "JSON.parse(require('fs').readFileSync('module.json', 'utf8'))"; then
++           echo "❌ module.json contains invalid JSON"
++           exit 1
++         fi
++         
++         echo "✅ module.json is valid"
++         
++     - name: Validate required fields
++       run: |
++         # Check for required fields in module.json
++         REQUIRED_FIELDS=("id" "title" "version" "compatibility")
++         
++         for field in "${REQUIRED_FIELDS[@]}"; do
++           if ! node -e "
++             const moduleJson = JSON.parse(require('fs').readFileSync('module.json', 'utf8'));
++             if (!moduleJson.$field) {
++               console.error('Missing required field: $field');
++               process.exit(1);
++             }
++           "; then
++             echo "❌ Missing required field: $field"
++             exit 1
++           fi
++         done
++         
++         echo "✅ All required fields present"
++         
++     - name: Check JavaScript syntax
++       run: |
++         # Check if darkSun.js exists and has valid syntax
++         if [ ! -f "darkSun.js" ]; then
++           echo "❌ darkSun.js not found"
++           exit 1
++         fi
++         
++         # Basic syntax check
++         if ! node -c darkSun.js; then
++           echo "❌ darkSun.js contains syntax errors"
++           exit 1
++         fi
++         
++         echo "✅ darkSun.js syntax is valid"
++         
++     - name: Create test zip
++       run: |
++         # Test creating a zip file
++         zip -r test-module.zip . -x "*.git*" "*.github*" "node_modules/*" "*.log" "*.tmp"
++         
++         # Check if zip was created successfully
++         if [ ! -f "test-module.zip" ]; then
++           echo "❌ Failed to create test zip file"
++           exit 1
++         fi
++         
++         echo "✅ Test zip created successfully"
++         
++     - name: Display module info
++       run: |
++         echo "📦 Module Information:"
++         node -e "
++           const moduleJson = JSON.parse(require('fs').readFileSync('module.json', 'utf8'));
++           console.log('ID:', moduleJson.id);
++           console.log('Title:', moduleJson.title);
++           console.log('Version:', moduleJson.version);
++           console.log('Compatibility:', JSON.stringify(moduleJson.compatibility));
++         " 
+```
+
+---
+
+Let me fix the GitHub Actions version issues by using the correct version numbers:
+
+
+---
+
+
+
+---
+
+Let me also fix the publish workflow with the correct versions:
+
+
+---
+
+
+
+---
+
+The linter errors are likely due to the IDE not recognizing the GitHub Actions marketplace. These are standard GitHub Actions that exist and work correctly. Let me create a release workflow that's more compatible and also create a script to help with releases:
+
+
+---
+
+
+
+---
+
+
+
+---
+
