@@ -1,0 +1,12 @@
+{
+  "id": "dark-sun",
+  "esmodules": [
+    "darkSun.js"
+  ],
+  "title": "Dark Sun",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "13"
+  }
+}
