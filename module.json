@@ -1,10 +1,9 @@
 {
   "id": "dark-sun-foundry",
-  "esmodules": [
-    "scripts/darkSun.js"
-  ],
   "title": "Dark Sun for Foundry",
   "description": "Dark Sun campaign adaptation for D&D 5e in Foundry VTT. Features Athasian currency system (ceramic tokens, lead beads), material properties (bone, obsidian, wood, stone), psionic spell school, and setting-appropriate language modifications.",
+  "library": "false",
+  "manifestPlusVersion": "1.2.0",
   "version": "#{VERSION}#",
   "compatibility": {
     "minimum": "12",
@@ -14,14 +13,16 @@
   "authors": [
     {
       "name": "Christopher Allbritton",
-      "github": "ctbritt",
-      "url": "https://github.com/ctbritt"
+      "github": "https://github.com/ctbritt",
+      "email": "callbritton@mac.com"
     }
+  ],
+  "esmodules": [
+    "scripts/darkSun.js"
   ],
   "url": "#{URL}#",
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
-  "license": "LICENSE",
   "readme": "README.md",
   "media": [
     {
@@ -29,4 +30,4 @@
       "url": "https://avatars2.githubusercontent.com/u/71292812?s=400&u=ccdb4eeb7abf551ca8f314e5a9bfd0479a4d3d41&v=4"
     }
   ]
-}``
+}
