@@ -110,22 +110,4 @@ Hooks.on("init", () => {
     ["gnomish", "goblin", "orc"],
     {}
   );
-  // CONFIG.DND5E.languages = configureSystem(
-  //   CONFIG.DND5E.languages.exotic.children,
-  //   [
-  //     "celestial",
-  //     "gith",
-  //     "gnoll",
-  //     "infernal",
-  //     "otyugh",
-  //     "timeRaider",
-  //     "angulotl",
-  //   ],
-  //   {}
-  //   // {
-  //   //   beholder: "Beholder",
-  //   //   loross: "Loross",
-  //   //   scro: "Scro",
-  //   // }
-  // );
 });
