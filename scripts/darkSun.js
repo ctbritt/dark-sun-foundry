@@ -1,4 +1,3 @@
-
 // Define configureSystem function globally so it can be reused
 const configureSystem = (configPath, removals = [], additions = {}) => {
   const baseConfig = foundry.utils.deepClone(configPath);
@@ -101,13 +100,15 @@ Hooks.on("init", () => {
   CONFIG.DND5E.validProperties.equipment.add("met");
   CONFIG.DND5E.validProperties.spell.add("psi");
 
-  // TODO: Language configuration - needs proper implementation
-  // The commented language configuration appears incomplete and would need
-  // proper structure to work with DND5E's language system
-
+  // Configure languages
   CONFIG.DND5E.languages = configureSystem(
     CONFIG.DND5E.languages.standard.children,
     ["gnomish", "goblin", "orc"],
     {}
   );
+
+  // Add silt vehicle type
+  if (!CONFIG.DND5E.vehicleTypes) CONFIG.DND5E.vehicleTypes = {};
+  CONFIG.DND5E.vehicleTypes["silt"] = "Silt Vehicle";
+  console.log("✔️ 'Silt Vehicle' added to vehicle types.");
 });
