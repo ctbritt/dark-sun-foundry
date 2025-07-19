@@ -12,15 +12,21 @@ Hooks.on("init", () => {
     CONFIG.DND5E.currencies,
     ["ep"], // items to remove
     {
+      pp: {
+        abbreviation: "pp",
+        conversion: 0.001,
+        icon: "systems/dnd5e/icons/currency/platinum.webp",
+        label: "Platinum",
+      },
       gp: {
         abbreviation: "gp",
-        conversion: 100,
+        conversion: 0.01,
         icon: "systems/dnd5e/icons/currency/gold.webp",
         label: "Gold",
       },
       sp: {
         abbreviation: "sp",
-        conversion: 10,
+        conversion: 0.1,
         icon: "systems/dnd5e/icons/currency/silver.webp",
         label: "Silver",
       },
